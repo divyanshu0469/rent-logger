@@ -23,7 +23,11 @@ export default function AppLayoutWrapper({ children }: AppLayoutWrapperProps) {
         <Link href={"/"} className="font-semibold">
           RentLogger
         </Link>
-        {token && <Button onClick={logout}>Log Out</Button>}
+        {token && (
+          <Button variant={"outline"} onClick={logout}>
+            Log Out
+          </Button>
+        )}
       </div>
       {children}
     </>
