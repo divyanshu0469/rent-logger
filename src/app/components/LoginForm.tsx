@@ -136,9 +136,13 @@ export default function LoginForm() {
       <Button type="submit" className="w-full">
         Login
       </Button>
-      <Button className="w-full">
-        <Link href={"/signup"}>Sign Up</Link>
-      </Button>
+
+      <div>
+        <span>Don't have an account ? </span>
+        <Link href={"/signup"} className="font-semibold">
+          Sign Up
+        </Link>
+      </div>
     </form>
   );
 }
