@@ -24,17 +24,20 @@ export async function GET(req: Request) {
 
       const db = await getDb();
 
-      const exist = await db.collection("users").findOne({ email });
-      if (exist) {
+      const tenants = await db
+        .collection("tenants")
+        .find({ createdBy: email })
+        .toArray();
+      if (tenants.length > 0) {
         return NextResponse.json({
-          email: exist?.email,
-          message: "User Found",
+          tenants: tenants,
+          message: "User found",
           status: 201,
         });
       }
 
       return NextResponse.json({
-        message: "User Not Found",
+        message: "Tenants not found",
         status: 404,
       });
     } catch (err) {

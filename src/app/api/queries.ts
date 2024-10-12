@@ -1,3 +1,4 @@
+"use client";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY } from "./queriesKeys";
@@ -18,17 +19,54 @@ export const useGetUser = () => {
       const response = await axios.get(`${apiBaseUrl}/protected/get-user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (response.data.status === 401) {
+      const data: { status: number; email: string | null; message: string } =
+        response.data;
+      if (data.status === 401) {
         logout();
       }
-      if (response.data.status === 201) {
+      if (data.status === 201) {
         return {
-          email: response.data.email,
-          message: response.data.message,
-          status: response.data.status,
+          email: data.email,
+          message: data.message,
+          status: data.status,
         };
       } else {
-        return { message: response.data.message, status: response.data.status };
+        return { message: data.message, status: data.status };
+      }
+    },
+  });
+  return {
+    data: data,
+    ...rest,
+  };
+};
+
+export const useGetTenants = () => {
+  const { token, logout } = useAuth();
+  const { data, ...rest } = useQuery({
+    queryKey: [QUERY.getUser],
+    queryFn: async () => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+      const response = await axios.get(`${apiBaseUrl}/protected/get-tenants`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data: { status: number; tenants: any[] | null; message: string } =
+        response.data;
+      if (data.status === 401) {
+        logout();
+      }
+      if (data.status === 201) {
+        return {
+          tenants: data.tenants,
+          message: data.message,
+          status: data.status,
+        };
+      } else {
+        return { message: data.message, status: data.status };
       }
     },
   });
