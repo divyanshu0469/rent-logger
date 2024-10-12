@@ -61,8 +61,6 @@ export const useIsUser = () => {
         password,
       });
 
-      console.log("Mutation isUser", response);
-
       if (response.data?.status === 201) {
         login(response.data?.token);
       }
@@ -71,6 +69,63 @@ export const useIsUser = () => {
         exists: response.data?.exists,
         message: response.data?.message,
         status: response.data?.status,
+      };
+    },
+  });
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useAddTenant = () => {
+  const { token } = useAuth();
+
+  const { data, ...rest } = useMutation<
+    { message: string; status: number },
+    Error,
+    {
+      email: string;
+      name: string;
+      rent: number | null;
+      lastReading: number | null;
+      waterBill: number | null;
+      lastNotes: string | null;
+    }
+  >({
+    mutationKey: [MUTATION.addTenant],
+    mutationFn: async ({
+      email,
+      name,
+      rent,
+      lastReading,
+      waterBill,
+      lastNotes,
+    }) => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+
+      const response = await axios.post(
+        `${apiBaseUrl}/protected/add-tenant`,
+        {
+          email,
+          name,
+          rent,
+          lastReading,
+          waterBill,
+          lastNotes,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data: { message: string; status: number } = response.data;
+
+      return {
+        message: data.message,
+        status: data.status,
       };
     },
   });

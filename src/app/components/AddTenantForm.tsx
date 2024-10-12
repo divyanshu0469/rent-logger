@@ -15,10 +15,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useGetUser } from "../api/queries";
+import { useToast } from "@/hooks/use-toast";
+import { useAddTenant } from "../api/mutations";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
-  rent: z.number().positive({ message: "Rent must be greater than 0" }),
+  rent: z
+    .number()
+    .positive({ message: "Rent must be greater than 0" })
+    .nullable(),
   lastReading: z
     .number()
     .nonnegative({ message: "Reading must be 0 or greater" })
@@ -33,26 +39,41 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function AddTenantForm() {
+  const { toast } = useToast();
+  const { data: userDetails } = useGetUser();
+  const { mutateAsync: addTenant } = useAddTenant();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      rent: undefined,
+      rent: null,
       lastReading: null,
       waterBill: null,
       lastNotes: null,
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // Here you would typically send this data to your backend
-    alert("Form submitted successfully!");
+  const onSubmit = async (formData: FormValues) => {
+    const email = userDetails?.email;
+    if (!email) {
+      toast({ description: "Please try again" });
+      return;
+    }
+    const { message } = await addTenant({
+      email,
+      name: formData.name,
+      rent: formData.rent,
+      lastReading: formData.lastReading,
+      waterBill: formData.waterBill,
+      lastNotes: formData.lastNotes,
+    });
+    toast({ description: message });
   };
 
   return (
     <div className="w-3/4 h-full flex flex-col justify-start gap-2 p-2 items-center">
-      <span>Add Rent</span>
+      <span>Add Tenant</span>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -66,7 +87,7 @@ export default function AddTenantForm() {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter name"
+                    placeholder="Enter name of tenant"
                     {...field}
                     onChange={(e) => field.onChange(e.target.value)}
                   />
@@ -87,6 +108,7 @@ export default function AddTenantForm() {
                     type="number"
                     placeholder="Enter rent amount"
                     {...field}
+                    value={field.value !== null ? field.value : ""}
                     onChange={(e) => {
                       const value = e.target.value
                         ? parseFloat(e.target.value)
