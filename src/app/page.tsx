@@ -1,8 +1,8 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useGetUser } from "./api/queries";
+import { redirect, useRouter } from "next/navigation";
 
 const Home = () => {
   const router = useRouter();
@@ -11,15 +11,11 @@ const Home = () => {
 
   useEffect(() => {
     if (token) {
-      if (data?.status === 401) {
-        router.push("/login");
-      } else {
-        router.push("/home");
-      }
+      redirect("/home");
     } else {
-      router.push("/login");
+      redirect("/login");
     }
-  }, [token, router]);
+  }, [token, data, router]);
 
   return null;
 };
