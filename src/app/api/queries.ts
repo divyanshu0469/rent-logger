@@ -75,3 +75,53 @@ export const useGetTenants = () => {
     ...rest,
   };
 };
+
+export const useGetSingleTenant = (tenantId: string) => {
+  const { token, logout } = useAuth();
+  const { data, ...rest } = useQuery({
+    queryKey: [QUERY.getSingleTenant],
+    queryFn: async () => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+      const response = await axios.post(
+        `${apiBaseUrl}/protected/get-single-tenant`,
+        { tenantId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data: {
+        status: number;
+        tenant: {
+          id: string;
+          waterBill: number | null;
+          createdBy: string;
+          lastNotes: string | null;
+          rent: number | null;
+          lastReading: number | null;
+        } | null;
+        message: string;
+      } = response.data;
+      if (data.status === 401) {
+        logout();
+      }
+      if (data.status === 201) {
+        return {
+          tenant: data.tenant,
+          message: data.message,
+          status: data.status,
+        };
+      } else {
+        return { message: data.message, status: data.status };
+      }
+    },
+  });
+  return {
+    data: data,
+    ...rest,
+  };
+};
