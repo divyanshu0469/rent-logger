@@ -2,23 +2,22 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { signToken } from "../../../lib/auth";
 import getDb from "../../../lib/db";
+import { ObjectId } from "mongodb";
 
 export async function POST(req: Request) {
   try {
     const {
-      email,
-      name,
-      rent,
-      reading,
-      waterBill,
+      tenantId,
+      totalBill,
       notes,
+      reading,
+      readingDifference,
     }: {
-      email: string;
-      name: string;
-      rent: number;
-      reading: number;
-      waterBill: number | null;
+      tenantId: string;
+      totalBill: number;
       notes: string | null;
+      reading: number;
+      readingDifference: number;
     } = await req.json();
 
     const db = await getDb();
@@ -29,7 +28,9 @@ export async function POST(req: Request) {
       year: "numeric",
     });
 
-    const exist = await db.collection("rents").findOne({ date, name, reading });
+    const exist = await db
+      .collection("rents")
+      .findOne({ _id: new ObjectId(tenantId), date, reading });
     if (exist) {
       return NextResponse.json({
         message: "Entry already exists",
@@ -38,15 +39,21 @@ export async function POST(req: Request) {
     }
 
     const response = await db.collection("rents").insertOne({
-      createdBy: email,
       date,
-      name,
-      rent,
+      totalBill,
       reading,
-      waterBill: waterBill,
+      readingDifference,
       notes: notes,
     });
-    if (response.insertedId) {
+
+    const updateResponse = await db
+      .collection("tenants")
+      .findOneAndUpdate(
+        { _id: new ObjectId(tenantId) },
+        { lastNotes: notes, lastReading: reading }
+      );
+
+    if (response.insertedId && updateResponse?._id) {
       return NextResponse.json({
         message: "Entry added",
         status: 201,

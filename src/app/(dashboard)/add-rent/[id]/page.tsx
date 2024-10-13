@@ -1,9 +1,9 @@
-import AddTenantForm from "@/app/components/AddTenantForm";
+import AddRentForm from "@/app/components/AddRentForm";
 
 const page = () => {
   return (
     <div className="w-full h-full flex justify-center items-center">
-      <AddTenantForm />
+      <AddRentForm />
     </div>
   );
 };
