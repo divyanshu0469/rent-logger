@@ -135,3 +135,51 @@ export const useAddTenant = () => {
     ...rest,
   };
 };
+
+export const useAddRent = () => {
+  const { token } = useAuth();
+
+  const { data, ...rest } = useMutation<
+    { message: string; status: number },
+    Error,
+    {
+      tenantId: string;
+      totalBill: number;
+      notes: string | null;
+      reading: number;
+      readingDifference: number;
+    }
+  >({
+    mutationKey: [MUTATION.addTenant],
+    mutationFn: async ({
+      tenantId,
+      totalBill,
+      notes,
+      reading,
+      readingDifference,
+    }) => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+
+      const response = await axios.post(
+        `${apiBaseUrl}/protected/add-rent`,
+        { tenantId, totalBill, notes, reading, readingDifference },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data: { message: string; status: number } = response.data;
+
+      return {
+        message: data.message,
+        status: data.status,
+      };
+    },
+  });
+
+  return {
+    data,
+    ...rest,
+  };
+};

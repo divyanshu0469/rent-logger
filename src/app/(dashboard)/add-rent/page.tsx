@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import React from "react";
 
@@ -35,16 +36,16 @@ const page = () => {
             return (
               <div
                 key={index}
-                className="w-full p-2 flex flex-row justify-between items-center"
+                className="w-full p-2 flex flex-row justify-around items-center"
               >
                 <AccordionItem
                   value={`tenant-${index}`}
-                  className="w-3/4 p-2 bg-slate-400 rounded-md"
+                  className="w-3/4 p-2 rounded-md"
                 >
                   <AccordionTrigger className="text-xl font-bold">
                     {tenant.name}
                   </AccordionTrigger>
-                  <AccordionContent className="text-lg font-semibold">
+                  <AccordionContent className="text-lg font-semibold flex flex-col gap-2">
                     <div className="w-full px-2 flex flex-row justify-between">
                       <span>Rent: </span>
                       <span>{tenant.rent}</span>
@@ -55,11 +56,17 @@ const page = () => {
                     </div>
                     <div className="w-full px-2 flex flex-row justify-between">
                       <span>Last Reading: </span>
-                      <span>{tenant.lastReading}</span>
+                      <span>{tenant.lastReading ?? "-"}</span>
                     </div>
                     <div className="w-full px-2 flex flex-row justify-between">
-                      <span>Notes: </span>
-                      <span>{tenant.lastNotes}</span>
+                      <span>Last Notes: </span>
+                      <span>
+                        <Textarea
+                          readOnly
+                          value={tenant.lastNotes ?? ""}
+                          placeholder="No Notes"
+                        />
+                      </span>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
