@@ -17,12 +17,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetSingleTenant } from "../api/queries";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddRent } from "../api/mutations";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   reading: z
+    .number()
+    .nonnegative({ message: "Reading must be 0 or greater" })
+    .nullable(),
+  readingDifference: z
     .number()
     .nonnegative({ message: "Reading must be 0 or greater" })
     .nullable(),
@@ -41,6 +45,7 @@ export default function AddRentForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       reading: null,
+      readingDifference: null,
       notes: null,
     },
   });
@@ -49,10 +54,15 @@ export default function AddRentForm() {
   const lastReading = tenantDetails?.tenant?.lastReading;
   const lastNotes = tenantDetails?.tenant?.lastNotes;
 
-  const totalBill =
+  const [totalBill, setTotalBill] = useState(
     (currentRent ?? 0) +
-    (currentWaterBill ?? 0) +
-    ((form.getValues("reading") ?? 0) - (lastReading ?? 0)) * 10;
+      (currentWaterBill ?? 0) +
+      ((form.getValues("reading") ?? 0) - (lastReading ?? 0)) * 10
+  );
+
+  const [readingDifference, setReadingDifference] = useState(
+    (form.getValues("reading") ?? 0) - (lastReading ?? 0)
+  );
 
   const onSubmit = async (formData: FormValues) => {
     const response = await addRent({
@@ -60,14 +70,28 @@ export default function AddRentForm() {
       notes: formData.notes,
       totalBill,
       reading: formData.reading ?? 0,
-      readingDifference: (formData.reading ?? 0) - (lastReading ?? 0),
+      readingDifference: readingDifference,
     });
     toast({ description: response.message });
   };
 
+  useEffect(() => {
+    setReadingDifference(
+      lastReading ? (form.getValues("reading") ?? 0) - (lastReading ?? 0) : 0
+    );
+  }, [form.getValues("reading")]);
+
+  useEffect(() => {
+    setTotalBill(
+      (currentRent ?? 0) + (currentWaterBill ?? 0) + readingDifference * 8
+    );
+  }, [form.getValues("readingDifference")]);
+
   return (
     <div className="w-3/4 h-full flex flex-col justify-start gap-2 p-2 items-center">
-      <span className="text-xl font-bold">Add Rent</span>
+      <span className="text-xl font-bold">
+        Add Rent {`For ${tenantDetails?.tenant?.name}`}
+      </span>
       <div className="w-full flex flex-col gap-2">
         <div className="flex flex-row justify-between">
           <span>Rent:</span>
@@ -112,10 +136,36 @@ export default function AddRentForm() {
               </FormItem>
             )}
           />
-          <div className="flex flex-row justify-between">
-            <span>Reading Difference:</span>
-            <span>{(form.getValues("reading") ?? 0) - (lastReading ?? 0)}</span>
-          </div>
+          <FormField
+            control={form.control}
+            name="readingDifference"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Reading Difference</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter reading Difference"
+                    {...field}
+                    readOnly={lastReading ? true : false}
+                    value={readingDifference}
+                    onChange={
+                      lastReading
+                        ? undefined
+                        : (e) => {
+                            const value = e.target.value
+                              ? parseFloat(e.target.value)
+                              : undefined;
+                            field.onChange(value);
+                            setReadingDifference(value ?? 0);
+                          }
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="flex flex-row justify-between text-lg font-bold">
             <span>Total:</span>
             <span>{totalBill}</span>

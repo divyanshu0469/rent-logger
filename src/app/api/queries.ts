@@ -44,7 +44,7 @@ export const useGetUser = () => {
 export const useGetTenants = () => {
   const { token, logout } = useAuth();
   const { data, ...rest } = useQuery({
-    queryKey: [QUERY.getUser],
+    queryKey: [QUERY.getTenants],
     queryFn: async () => {
       if (!apiBaseUrl) {
         throw new Error("API Base URL is not defined.");
@@ -98,6 +98,93 @@ export const useGetSingleTenant = (tenantId: string) => {
         status: number;
         tenant: {
           id: string;
+          name: string;
+          waterBill: number | null;
+          createdBy: string;
+          lastNotes: string | null;
+          rent: number | null;
+          lastReading: number | null;
+        } | null;
+        message: string;
+      } = response.data;
+      if (data.status === 401) {
+        logout();
+      }
+      if (data.status === 201) {
+        return {
+          tenant: data.tenant,
+          message: data.message,
+          status: data.status,
+        };
+      } else {
+        return { message: data.message, status: data.status };
+      }
+    },
+  });
+  return {
+    data: data,
+    ...rest,
+  };
+};
+
+export const useGetRents = () => {
+  const { token, logout } = useAuth();
+  const { data, ...rest } = useQuery({
+    queryKey: [QUERY.getRents],
+    queryFn: async () => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+      const response = await axios.get(`${apiBaseUrl}/protected/get-rents`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data: { status: number; tenants: any[] | null; message: string } =
+        response.data;
+      if (data.status === 401) {
+        logout();
+      }
+      if (data.status === 201) {
+        return {
+          tenants: data.tenants,
+          message: data.message,
+          status: data.status,
+        };
+      } else {
+        return { message: data.message, status: data.status };
+      }
+    },
+  });
+  return {
+    data: data,
+    ...rest,
+  };
+};
+
+export const useGetSingleRent = (rentId: string) => {
+  const { token, logout } = useAuth();
+  const { data, ...rest } = useQuery({
+    queryKey: [QUERY.getSingleRent],
+    queryFn: async () => {
+      if (!apiBaseUrl) {
+        throw new Error("API Base URL is not defined.");
+      } else if (!token) {
+        return { message: "No token Found", status: 401 };
+      }
+      const response = await axios.post(
+        `${apiBaseUrl}/protected/get-single-rent`,
+        { rentId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data: {
+        status: number;
+        tenant: {
+          id: string;
+          name: string;
           waterBill: number | null;
           createdBy: string;
           lastNotes: string | null;
