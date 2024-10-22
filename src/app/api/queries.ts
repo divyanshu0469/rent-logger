@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY } from "./queriesKeys";
 import axios from "axios";
+import { Rent, Tenant } from "../lib/schema";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -54,8 +55,11 @@ export const useGetTenants = () => {
       const response = await axios.get(`${apiBaseUrl}/protected/get-tenants`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data: { status: number; tenants: any[] | null; message: string } =
-        response.data;
+      const data: {
+        status: number;
+        tenants: Tenant[] | null;
+        message: string;
+      } = response.data;
       if (data.status === 401) {
         logout();
       }
@@ -96,15 +100,7 @@ export const useGetSingleTenant = (tenantId: string) => {
 
       const data: {
         status: number;
-        tenant: {
-          id: string;
-          name: string;
-          waterBill: number | null;
-          createdBy: string;
-          lastNotes: string | null;
-          rent: number | null;
-          lastReading: number | null;
-        } | null;
+        tenant: Tenant | null;
         message: string;
       } = response.data;
       if (data.status === 401) {
@@ -140,13 +136,18 @@ export const useGetRents = () => {
       const response = await axios.get(`${apiBaseUrl}/protected/get-rents`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data: { status: number; tenants: any[] | null; message: string } =
-        response.data;
+      const data: {
+        status: number;
+        rents: Rent[] | null;
+        tenants: Tenant[] | null;
+        message: string;
+      } = response.data;
       if (data.status === 401) {
         logout();
       }
       if (data.status === 201) {
         return {
+          rents: data.rents,
           tenants: data.tenants,
           message: data.message,
           status: data.status,
@@ -182,15 +183,8 @@ export const useGetSingleRent = (rentId: string) => {
 
       const data: {
         status: number;
-        tenant: {
-          id: string;
-          name: string;
-          waterBill: number | null;
-          createdBy: string;
-          lastNotes: string | null;
-          rent: number | null;
-          lastReading: number | null;
-        } | null;
+        tenant: Tenant | null;
+        rent: Rent | null;
         message: string;
       } = response.data;
       if (data.status === 401) {
@@ -199,6 +193,7 @@ export const useGetSingleRent = (rentId: string) => {
       if (data.status === 201) {
         return {
           tenant: data.tenant,
+          rent: data.rent,
           message: data.message,
           status: data.status,
         };

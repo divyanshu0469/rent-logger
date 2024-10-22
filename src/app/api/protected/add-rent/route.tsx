@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import { signToken } from "../../../lib/auth";
 import getDb from "../../../lib/db";
 import { ObjectId } from "mongodb";
 

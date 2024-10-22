@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyToken } from "../../../lib/auth";
 import getDb from "../../../lib/db";
 import { ObjectId } from "mongodb";
+import { Rent, Tenant } from "@/app/lib/schema";
 
 export async function POST(req: Request) {
   try {
@@ -28,22 +29,34 @@ export async function POST(req: Request) {
 
       const db = await getDb();
 
-      const rent = await db
+      const rent = (await db
         .collection("rents")
-        .findOne({ _id: new ObjectId(rentId) });
+        .findOne({ _id: new ObjectId(rentId) })) as Rent | null;
 
-      if (rent) {
+      const tenant = (await db
+        .collection("tenants")
+        .findOne({ _id: new ObjectId(rent?.tenantId) })) as Tenant | null;
+
+      if (tenant) {
+        if (rent) {
+          return NextResponse.json({
+            rent: rent,
+            tenant: tenant,
+            message: "Rent found",
+            status: 201,
+          });
+        } else {
+          return NextResponse.json({
+            message: "Rent not found",
+            status: 404,
+          });
+        }
+      } else {
         return NextResponse.json({
-          rent: rent,
-          message: "Rent found",
-          status: 201,
+          message: "Tenant not found",
+          status: 404,
         });
       }
-
-      return NextResponse.json({
-        message: "Rent not found",
-        status: 404,
-      });
     } catch (err) {
       console.error("Token verification failed:", err);
       return NextResponse.json({
