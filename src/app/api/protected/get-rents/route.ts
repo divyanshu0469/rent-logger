@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyToken } from "../../../lib/auth";
 import getDb from "../../../lib/db";
+import { Rent, Tenant } from "@/app/lib/schema";
 
 export async function GET(req: Request) {
   try {
@@ -24,22 +25,36 @@ export async function GET(req: Request) {
 
       const db = await getDb();
 
-      const tenants = await db
+      const tenants = (await db
         .collection("tenants")
         .find({ createdBy: email })
-        .toArray();
+        .toArray()) as Tenant[];
+      const tenantIds = tenants.map((tenant) => tenant._id);
+      const rents = (await db
+        .collection("rents")
+        .find({ tenantId: { $in: tenantIds } })
+        .toArray()) as Rent[];
       if (tenants.length > 0) {
+        if (rents.length > 0) {
+          return NextResponse.json({
+            tenants: tenants,
+            rents: rents,
+            message: "Rents found",
+            status: 201,
+          });
+        } else {
+          return NextResponse.json({
+            tenants: tenants,
+            message: "Rents not found",
+            status: 201,
+          });
+        }
+      } else {
         return NextResponse.json({
-          tenants: tenants,
-          message: "User found",
-          status: 201,
+          message: "Tenants not found",
+          status: 404,
         });
       }
-
-      return NextResponse.json({
-        message: "Tenants not found",
-        status: 404,
-      });
     } catch (err) {
       console.error("Token verification failed:", err);
       return NextResponse.json({
