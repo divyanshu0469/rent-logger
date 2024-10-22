@@ -1,5 +1,5 @@
 "use client";
-import { useGetTenants } from "@/app/api/queries";
+import { useGetRents } from "@/app/api/queries";
 import {
   Accordion,
   AccordionContent,
@@ -12,7 +12,12 @@ import Link from "next/link";
 import React from "react";
 
 const page = () => {
-  const { data } = useGetTenants();
+  const { data } = useGetRents();
+  const sorted = data?.rents?.sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return -1 * (dateA - dateB);
+  });
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-2">
@@ -21,38 +26,39 @@ const page = () => {
         collapsible
         className="w-full flex flex-col justify-center items-center gap-2"
       >
-        {data?.tenants?.map((tenant, index) => {
+        {sorted?.map((rent, index) => {
+          const tenant = data?.tenants?.find((value) => {
+            return value._id === rent.tenantId;
+          });
+          if (!tenant) {
+            return;
+          }
           return (
             <div
               key={index}
               className="w-full p-2 flex flex-row justify-around items-center"
             >
               <AccordionItem
-                value={`tenant-${index}`}
+                value={`rent-${index}`}
                 className="w-3/4 p-2 rounded-md"
               >
-                <AccordionTrigger className="text-xl font-bold">
-                  {tenant.name}
+                <AccordionTrigger className="flex gap-2">
+                  <div className="w-full flex justify-between items-center gap-2">
+                    <span className="text-xl font-bold">{tenant.name}</span>
+                    <span>{rent.date}</span>
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="text-lg font-semibold flex flex-col gap-2">
                   <div className="w-full px-2 flex flex-row justify-between">
-                    <span>Rent: </span>
-                    <span>{tenant.rent}</span>
+                    <span>Total Bill: </span>
+                    <span>{rent.totalBill}</span>
                   </div>
                   <div className="w-full px-2 flex flex-row justify-between">
-                    <span>Water: </span>
-                    <span>{tenant.waterBill}</span>
-                  </div>
-                  <div className="w-full px-2 flex flex-row justify-between">
-                    <span>Last Reading: </span>
-                    <span>{tenant.lastReading ?? "-"}</span>
-                  </div>
-                  <div className="w-full px-2 flex flex-row justify-between">
-                    <span>Last Notes: </span>
+                    <span>Notes: </span>
                     <span>
                       <Textarea
                         readOnly
-                        value={tenant.lastNotes ?? ""}
+                        value={rent.notes ?? ""}
                         placeholder="No Notes"
                       />
                     </span>
@@ -60,20 +66,15 @@ const page = () => {
                 </AccordionContent>
               </AccordionItem>
               <Button>
-                <Link href={`/add-rent/${tenant._id}`}>Add Rent</Link>
+                <Link href={`/view-rent/${rent._id}`}>View Rent</Link>
               </Button>
             </div>
           );
         })}
       </Accordion>
-      <div className="w-full py-6 px-4 flex justify-center gap-2">
-        <Button variant={"outline"}>
-          <Link href={"/add-tenant"}>Add Tenant</Link>
-        </Button>
-        <Button variant={"outline"}>
-          <Link href={"/view-rents"}>View Rents</Link>
-        </Button>
-      </div>
+      <Button variant={"outline"}>
+        <Link href={"/add-rent"}>Add Rent</Link>
+      </Button>
     </div>
   );
 };

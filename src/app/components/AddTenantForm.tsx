@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGetUser } from "../api/queries";
 import { useToast } from "@/hooks/use-toast";
 import { useAddTenant } from "../api/mutations";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -39,6 +40,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function AddTenantForm() {
+  const router = useRouter();
   const { toast } = useToast();
   const { data: userDetails } = useGetUser();
   const { mutateAsync: addTenant } = useAddTenant();
@@ -69,6 +71,7 @@ export default function AddTenantForm() {
       lastNotes: formData.lastNotes,
     });
     toast({ description: message });
+    router.push("/home");
   };
 
   return (

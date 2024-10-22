@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import { signToken } from "../../../lib/auth";
 import getDb from "../../../lib/db";
 import { ObjectId } from "mongodb";
 
@@ -30,7 +28,7 @@ export async function POST(req: Request) {
 
     const exist = await db
       .collection("rents")
-      .findOne({ _id: new ObjectId(tenantId), date, reading });
+      .findOne({ tenantId: new ObjectId(tenantId), date, reading });
     if (exist) {
       return NextResponse.json({
         message: "Entry already exists",
@@ -40,17 +38,18 @@ export async function POST(req: Request) {
 
     const response = await db.collection("rents").insertOne({
       date,
+      tenantId: new ObjectId(tenantId),
       totalBill,
       reading,
       readingDifference,
       notes: notes,
     });
-
     const updateResponse = await db
       .collection("tenants")
       .findOneAndUpdate(
         { _id: new ObjectId(tenantId) },
-        { lastNotes: notes, lastReading: reading }
+        { $set: { lastNotes: notes, lastReading: reading } },
+        { returnDocument: "after" }
       );
 
     if (response.insertedId && updateResponse?._id) {
