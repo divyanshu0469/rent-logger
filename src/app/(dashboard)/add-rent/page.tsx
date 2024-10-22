@@ -66,7 +66,7 @@ const page = () => {
           );
         })}
       </Accordion>
-      <div className="flex gap-2">
+      <div className="w-full py-6 px-4 flex justify-center gap-2">
         <Button variant={"outline"}>
           <Link href={"/add-tenant"}>Add Tenant</Link>
         </Button>
