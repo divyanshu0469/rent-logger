@@ -21,7 +21,12 @@ import { useAddRent } from "../api/mutations";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  reading: z.number().nonnegative().nullable(),
+  reading: z
+    .number({
+      required_error: "Reading is required",
+      invalid_type_error: "Reading must be a number",
+    })
+    .nonnegative(),
   readingDifference: z.number().nonnegative().nullable(),
   notes: z.string().nullable(),
 });
