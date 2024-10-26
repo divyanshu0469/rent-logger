@@ -33,16 +33,6 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface TenantDetails {
-  tenant: {
-    rent: number;
-    waterBill: number;
-    lastReading: number;
-    lastNotes?: string;
-    name: string;
-  };
-}
-
 export default function AddRentForm() {
   const { toast } = useToast();
   const params = useParams();
