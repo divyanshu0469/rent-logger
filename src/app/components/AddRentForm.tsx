@@ -82,6 +82,8 @@ export default function AddRentForm() {
     setReadingDifference(newReadingDifference);
     setTotalBill(calculateTotalBill(newReadingDifference));
   }, [
+    form,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     form.getValues("reading"),
     calculateReadingDifference,
     calculateTotalBill,

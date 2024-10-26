@@ -16,7 +16,7 @@ export default function AppLayoutWrapper({ children }: AppLayoutWrapperProps) {
     if (!token) {
       router.push("/");
     }
-  }, [token]);
+  }, [token, router]);
   return (
     <>
       <div className="w-full h-20 bg-red-500 flex flex-row justify-around items-center">

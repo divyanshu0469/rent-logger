@@ -7,8 +7,9 @@ import { AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAddUser } from "../api/mutations";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { AxiosError } from "axios";
 
 export default function SignUpForm() {
   const { toast } = useToast();
@@ -66,11 +67,15 @@ export default function SignUpForm() {
         toast({
           description: `${response.message}`,
         });
-      } catch (error: any) {
+      } catch (error) {
         console.log("error during SignUp", error);
-        toast({
-          description: `${error?.response?.data?.message}`,
-        });
+
+        if (error instanceof AxiosError && error.response) {
+          const msg = error.response.data?.message;
+          toast({
+            description: `${msg}`,
+          });
+        }
       }
 
       setEmail("");
