@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-const page = () => {
+const Page = () => {
   const params = useParams();
   const { data } = useGetSingleRent(params["id"] as string);
   return (
@@ -64,4 +64,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -9,6 +9,7 @@ import { useIsUser } from "../api/mutations";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function LoginForm() {
   const { toast } = useToast();
@@ -72,11 +73,15 @@ export default function LoginForm() {
             description: `User Not Found`,
           });
         }
-      } catch (error: any) {
-        console.log("error during login", error);
-        toast({
-          description: `${error?.response?.data?.message}`,
-        });
+      } catch (error) {
+        console.log("error during SignUp", error);
+
+        if (error instanceof AxiosError && error.response) {
+          const msg = error.response.data?.message;
+          toast({
+            description: `${msg}`,
+          });
+        }
       }
 
       setEmail("");
@@ -138,7 +143,7 @@ export default function LoginForm() {
       </Button>
 
       <div>
-        <span>Don't have an account ? </span>
+        <span>Don&apos;t have an account ? </span>
         <Link href={"/signup"} className="font-semibold">
           Sign Up
         </Link>

@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import React from "react";
 
-const page = () => {
+const Page = () => {
   const { data } = useGetRents();
   const sorted = data?.rents?.sort((a, b) => {
     const dateA = new Date(a.date).getTime();
@@ -79,4 +79,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

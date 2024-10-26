@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import React from "react";
 
-const page = () => {
+const Page = () => {
   const { data } = useGetTenants();
 
   return (
@@ -78,4 +78,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
