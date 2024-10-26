@@ -43,7 +43,7 @@ export default function AddRentForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      reading: null,
+      reading: 0,
       readingDifference: null,
       notes: null,
     },
