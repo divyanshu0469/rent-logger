@@ -42,7 +42,7 @@ const Page = () => {
               return value._id === rent.tenantId;
             });
             if (!tenant) {
-              return <div>No Tenants Found</div>;
+              return <div key={index}>No Tenants Found</div>;
             }
             return (
               <div

@@ -68,7 +68,7 @@ export default function AddRentForm() {
     (readingDifference: number): number => {
       return currentRent + currentWaterBill + readingDifference * perUnitCharge;
     },
-    [currentRent, currentWaterBill]
+    [currentRent, currentWaterBill, perUnitCharge]
   );
 
   const [readingDifference, setReadingDifference] = useState<number>(
