@@ -1,17 +1,18 @@
 "use client";
 import { useGetSingleRent } from "@/app/api/queries";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 
 const Page = () => {
   const params = useParams();
   const { data } = useGetSingleRent(params["id"] as string);
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      {data?.tenant && data?.rent && (
-        <div className="w-11/12 flex flex-col gap-4">
+    <div className="w-full h-full flex flex-col justify-center items-center gap-6">
+      <h1 className="w-full p-6 mt-24 text-3xl font-bold font-serif text-center border-b">
+        Rent
+      </h1>
+      {data?.tenant && data?.rent ? (
+        <div className="w-11/12 md:w-1/2 flex flex-col gap-4">
           <div className="w-full flex justify-between items-center gap-2">
             <span className="text-xl font-bold">{data.tenant.name}</span>
             <span>{data.rent.date}</span>
@@ -35,7 +36,7 @@ const Page = () => {
               <span>Reading After: </span>
               <span>{data.rent.reading}</span>
             </div>
-            <div className="w-full px-2 flex flex-row justify-between font-semibold">
+            <div className="w-full px-2 flex flex-row justify-between font-bold">
               <span>Total Bill: </span>
               <span>{data.rent.totalBill}</span>
             </div>
@@ -50,15 +51,9 @@ const Page = () => {
               />
             </span>
           </div>
-          <div className="w-full py-6 px-4 flex justify-center gap-2">
-            <Button variant={"outline"}>
-              <Link href={`/add-rent/${data.tenant._id}`}>Add Rent</Link>
-            </Button>
-            <Button variant={"outline"}>
-              <Link href={"/view-rents"}>View Rents</Link>
-            </Button>
-          </div>
         </div>
+      ) : (
+        <div>No Rent Found</div>
       )}
     </div>
   );

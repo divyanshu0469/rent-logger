@@ -53,6 +53,9 @@ export default function AddRentForm() {
   const currentWaterBill = tenantDetails?.tenant?.waterBill || 0;
   const lastReading = tenantDetails?.tenant?.lastReading || 0;
   const lastNotes = tenantDetails?.tenant?.lastNotes;
+  const perUnitCharge = parseInt(
+    process.env.NEXT_PUBLIC_PER_UNIT_CHARGE || "1"
+  );
 
   const calculateReadingDifference = useCallback(
     (reading: number | null): number => {
@@ -63,7 +66,7 @@ export default function AddRentForm() {
 
   const calculateTotalBill = useCallback(
     (readingDifference: number): number => {
-      return currentRent + currentWaterBill + readingDifference * 8;
+      return currentRent + currentWaterBill + readingDifference * perUnitCharge;
     },
     [currentRent, currentWaterBill]
   );
@@ -102,9 +105,7 @@ export default function AddRentForm() {
 
   return (
     <div className="w-3/4 h-full flex flex-col justify-start gap-2 p-2 items-center">
-      <span className="text-xl font-bold">
-        Add Rent {`For ${tenantDetails?.tenant?.name}`}
-      </span>
+      <span className="text-xl font-bold">{tenantDetails?.tenant?.name}</span>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -193,6 +194,14 @@ export default function AddRentForm() {
               </FormItem>
             )}
           />
+          {readingDifference && readingDifference > 0 ? (
+            <div className="w-full flex flex-row justify-between text-sm">
+              <span>Electricity:</span>
+              <span>
+                {readingDifference} * {perUnitCharge}
+              </span>
+            </div>
+          ) : null}
           <div className="flex flex-row justify-between text-lg font-bold">
             <span>Total:</span>
             <span>{totalBill}</span>
