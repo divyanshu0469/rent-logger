@@ -35,7 +35,7 @@ const NavBar = ({
   }
 
   return (
-    <div className="fixed w-full h-20 my-6 flex justify-center">
+    <div className="fixed bottom-2 w-full h-20 my-6 flex justify-center">
       <div className="w-80 rounded-2xl flex flex-row justify-evenly items-center gap-1 shadow-lg shadow-gray-500/50 backdrop-blur-sm">
         <Button
           variant={"accented"}
