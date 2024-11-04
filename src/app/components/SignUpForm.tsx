@@ -86,17 +86,22 @@ export default function SignUpForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 max-w-md mx-auto p-6 bg-card rounded-lg shadow-lg flex flex-1 flex-col justify-center items-center"
+      className="space-y-6 max-w-md h-full mx-auto p-6 pt-32 rounded-b-3xl shadow-lg flex flex-grow flex-1 flex-col justify-center items-center"
     >
-      <h2 className="text-2xl font-bold text-center text-foreground">
-        Sign Up
-      </h2>
+      <h2 className="text-3xl pt-8 font-normal w-full">Create your account</h2>
+      <div className="w-full pb-8 border-b font-bold">
+        <span className="text-black">Have an account ? </span>
+        <Link href={"/login"} className="text-blue-600">
+          Log In Now
+        </Link>
+      </div>
       <div className="space-y-2 w-full">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="text-sm text-slate-900">
+          Email Address
+        </Label>
         <Input
           id="email"
           type="text"
-          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -108,19 +113,22 @@ export default function SignUpForm() {
         )}
       </div>
       <div className="space-y-2 w-full">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-sm text-slate-900">
+          Password
+        </Label>
         <div className="flex items-center gap-1">
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-5/6"
           />
           <div
             className={`w-1/6 hover:outline hover:outline-2 p-2 select-none rounded-md text-center ${
-              showPassword ? "bg-primary text-white" : "bg-white text-black"
+              showPassword
+                ? "bg-green-800 text-white"
+                : "bg-white text-green-800"
             }`}
             onClick={() => setShowPassword((prev) => !prev)}
           >
@@ -134,16 +142,13 @@ export default function SignUpForm() {
           </p>
         )}
       </div>
-      <Button type="submit" className="w-full">
-        Sign Up
+      <Button
+        disabled={email.length === 0 || password.length === 0}
+        type="submit"
+        className="w-full"
+      >
+        Sign up
       </Button>
-
-      <div>
-        <span>Already have an account ? </span>
-        <Link href={"/login"} className="font-semibold">
-          Login
-        </Link>
-      </div>
     </form>
   );
 }

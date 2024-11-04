@@ -76,7 +76,6 @@ export default function AddTenantForm() {
 
   return (
     <div className="w-3/4 h-full flex flex-col justify-start gap-2 p-2 items-center">
-      <span>Add Tenant</span>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

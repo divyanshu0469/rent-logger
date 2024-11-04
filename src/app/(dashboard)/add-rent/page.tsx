@@ -16,6 +16,9 @@ const Page = () => {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-2">
+      <h1 className="w-full p-6 mt-24 text-3xl font-bold font-serif text-center border-b">
+        Tenants
+      </h1>
       <Accordion
         type="single"
         collapsible
@@ -59,21 +62,18 @@ const Page = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-              <Button>
-                <Link href={`/add-rent/${tenant._id}`}>Add Rent</Link>
+              <Button size={"defaultWithNoPadding"}>
+                <Link
+                  href={`/add-rent/${tenant._id}`}
+                  className="w-full h-full px-2 flex justify-center items-center rounded-lg"
+                >
+                  Add Rent
+                </Link>
               </Button>
             </div>
           );
         })}
       </Accordion>
-      <div className="w-full py-6 px-4 flex justify-center gap-2">
-        <Button variant={"outline"}>
-          <Link href={"/add-tenant"}>Add Tenant</Link>
-        </Button>
-        <Button variant={"outline"}>
-          <Link href={"/view-rents"}>View Rents</Link>
-        </Button>
-      </div>
     </div>
   );
 };
