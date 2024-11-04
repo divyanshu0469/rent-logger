@@ -13,8 +13,9 @@ const NavBar = ({
 }) => {
   const url = usePathname();
 
-  const routeMap = new Map();
-  routeMap.set("add-rent", {
+  const routesData = [];
+  routesData.push({
+    route: "add-rent",
     buttonOne: { displayName: "Add Tenant", urlRoute: "add-tenant" },
     buttonTwo: { displayName: "View Rents", urlRoute: "view-rents" },
   });
@@ -22,14 +23,15 @@ const NavBar = ({
   let buttonOne = { displayName: "Add Rent", urlRoute: "add-rent" };
   let buttonTwo = { displayName: "View Rents", urlRoute: "view-rents" };
 
-  const keys: string[] = routeMap
-    .keys()
-    .toArray()
-    .filter((route) => url.includes(route));
+  const keys = routesData.filter((routeDetails) => {
+    if (url.includes(routeDetails.route)) {
+      return routeDetails;
+    }
+  });
 
   if (keys.length > 0) {
-    buttonOne = routeMap.get(keys[0]).buttonOne;
-    buttonTwo = routeMap.get(keys[0]).buttonTwo;
+    buttonOne = keys[0].buttonOne;
+    buttonTwo = keys[0].buttonTwo;
   }
 
   return (
