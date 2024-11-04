@@ -19,8 +19,9 @@ export default function AppLayoutWrapper({ children }: AppLayoutWrapperProps) {
   }, [token, router]);
   return (
     <>
-      <NavBar token={token} logout={logout} />
       {children}
+      <div className="mt-32"></div>
+      <NavBar token={token} logout={logout} />
     </>
   );
 }
