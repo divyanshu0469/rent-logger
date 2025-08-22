@@ -14,6 +14,7 @@ export interface Tenant {
   lastReading: number | null;
   waterBill: number | null;
   lastNotes: string | null;
+  isArchived: boolean;
 }
 
 export interface Rent {

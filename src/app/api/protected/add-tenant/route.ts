@@ -36,6 +36,7 @@ export async function POST(req: Request) {
       lastReading: lastReading,
       waterBill: waterBill,
       lastNotes: lastNotes,
+      isArchived: false,
     });
     if (response.insertedId) {
       return NextResponse.json({
