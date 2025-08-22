@@ -34,7 +34,7 @@ const Page = () => {
       <Accordion
         type="single"
         collapsible
-        className="w-full md:w-1/2 flex flex-col justify-center items-center gap-2"
+        className="w-1/2 max-2xl:2/3 max-xl:w-4/5 max-md:w-full flex flex-col justify-center items-center gap-2"
       >
         {sorted && sorted.length > 0 ? (
           sorted.map((rent, index) => {
@@ -56,7 +56,7 @@ const Page = () => {
                   <AccordionTrigger className="w-full flex gap-2 p-2">
                     <div className="w-full flex flex-wrap justify-between items-center gap-2">
                       <span
-                        className="flex truncate text-left text-xl font-bold"
+                        className="flex overflow-hidden text-left text-xl font-bold"
                         style={{
                           scrollbarWidth: "thin",
                           scrollbarColor: "inherit",

@@ -22,7 +22,7 @@ const Page = () => {
       <Accordion
         type="single"
         collapsible
-        className="w-full flex flex-col justify-center items-center gap-2"
+        className="w-1/2 max-2xl:2/3 max-xl:w-4/5 max-md:w-full flex flex-col justify-center items-center gap-2"
       >
         {data?.tenants?.map((tenant, index) => {
           return (
