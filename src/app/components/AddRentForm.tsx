@@ -15,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetSingleTenant } from "../api/queries";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { useAddRent } from "../api/mutations";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   reading: z
@@ -34,11 +35,13 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function AddRentForm() {
+  const router = useRouter();
   const { toast } = useToast();
   const params = useParams();
   const id = params["id"] as string;
-  const { mutateAsync: addRent } = useAddRent();
-  const { data: tenantDetails } = useGetSingleTenant(id);
+  const { mutateAsync: addRent, isPending } = useAddRent();
+  const { data: tenantDetails, isPending: isDetailsPending } =
+    useGetSingleTenant(id);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,6 +104,7 @@ export default function AddRentForm() {
       readingDifference: readingDifference,
     });
     toast({ description: response.message });
+    router.replace("/add-rent");
   };
 
   return (
@@ -137,6 +141,7 @@ export default function AddRentForm() {
                 <FormLabel>Reading: </FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isDetailsPending || isPending}
                     className="w-1/2"
                     type="number"
                     min={0}
@@ -168,6 +173,7 @@ export default function AddRentForm() {
                 <FormLabel>Reading Difference: </FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isDetailsPending || isPending}
                     className="w-1/2"
                     type="number"
                     placeholder="Enter Difference"
@@ -224,6 +230,7 @@ export default function AddRentForm() {
                 <FormLabel>Notes (optional)</FormLabel>
                 <FormControl>
                   <Textarea
+                    disabled={isDetailsPending || isPending}
                     placeholder="Enter any additional notes"
                     {...field}
                     value={field.value !== null ? field.value : ""}
@@ -235,7 +242,13 @@ export default function AddRentForm() {
             )}
           />
           <div className="w-full flex justify-center">
-            <Button type="submit">Submit</Button>
+            <Button disabled={isDetailsPending || isPending} type="submit">
+              {isPending || isDetailsPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

@@ -19,6 +19,7 @@ import { useGetUser } from "../api/queries";
 import { useToast } from "@/hooks/use-toast";
 import { useAddTenant } from "../api/mutations";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -43,7 +44,7 @@ export default function AddTenantForm() {
   const router = useRouter();
   const { toast } = useToast();
   const { data: userDetails } = useGetUser();
-  const { mutateAsync: addTenant } = useAddTenant();
+  const { mutateAsync: addTenant, isPending } = useAddTenant();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,7 +72,7 @@ export default function AddTenantForm() {
       lastNotes: formData.lastNotes,
     });
     toast({ description: message });
-    router.push("/home");
+    router.push("/add-rent");
   };
 
   return (
@@ -89,6 +90,7 @@ export default function AddTenantForm() {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isPending}
                     placeholder="Enter name of tenant"
                     {...field}
                     onChange={(e) => field.onChange(e.target.value)}
@@ -106,6 +108,7 @@ export default function AddTenantForm() {
                 <FormLabel>Rent</FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isPending}
                     min={1}
                     type="number"
                     placeholder="Enter rent amount"
@@ -132,6 +135,7 @@ export default function AddTenantForm() {
                 <FormLabel>Reading</FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isPending}
                     min={0}
                     type="number"
                     placeholder="Enter reading"
@@ -158,6 +162,7 @@ export default function AddTenantForm() {
                 <FormLabel>Water Bill (optional)</FormLabel>
                 <FormControl>
                   <Input
+                    disabled={isPending}
                     min={1}
                     type="number"
                     placeholder="Enter water bill amount"
@@ -186,6 +191,7 @@ export default function AddTenantForm() {
                 <FormLabel>Notes (optional)</FormLabel>
                 <FormControl>
                   <Textarea
+                    disabled={isPending}
                     placeholder="Enter any additional notes"
                     {...field}
                     value={field.value !== null ? field.value : ""}
@@ -197,7 +203,13 @@ export default function AddTenantForm() {
             )}
           />
           <div className="w-full flex justify-center">
-            <Button type="submit">Submit</Button>
+            <Button disabled={isPending} type="submit">
+              {isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

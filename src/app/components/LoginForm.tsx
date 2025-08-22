@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsUser } from "../api/mutations";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const { mutateAsync: isUser } = useIsUser();
+  const { mutateAsync: isUser, isPending } = useIsUser();
 
   const { token } = useAuth();
   const router = useRouter();
@@ -108,6 +108,7 @@ export default function LoginForm() {
           Email Address
         </Label>
         <Input
+          disabled={isPending}
           id="email"
           type="text"
           value={email}
@@ -126,6 +127,7 @@ export default function LoginForm() {
         </Label>
         <div className="flex items-center gap-1">
           <Input
+            disabled={isPending}
             id="password"
             type={showPassword ? "text" : "password"}
             value={password}
@@ -151,11 +153,15 @@ export default function LoginForm() {
         )}
       </div>
       <Button
-        disabled={email.length === 0 || password.length === 0}
+        disabled={isPending || email.length === 0 || password.length === 0}
         type="submit"
         className="w-full"
       >
-        Login
+        {isPending ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          "Login"
+        )}
       </Button>
     </form>
   );
